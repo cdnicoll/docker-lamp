@@ -6,16 +6,25 @@ nginx:
         - 80:80
     links:
         - php    # We are telling Docker Compose that the nginx container needs a link to the php one
-    volumes:
-        - .:/var/www/html
+    volumes_from:
+        # we are telling Docker Compose to mount the volumes from app in both these containers
+        - app
 
 php:
     image: php:7.0-fpm
     expose: # expose port to other containers only
         - 9000
+    volumes_from:
+        # we are telling Docker Compose to mount the volumes from app in both these containers
+        - app
+
+# The purpose of this container is solely to hold the application code
+app:
+    image: php:7.0-fpm
     volumes:
       # . (current directory) must be mounted inside the container as its /var/www/html directory. 
       # To simplify, it means that the content of the current directory on our 
       # host machine will be in sync with the container's. It also means that this 
       # content will be persistent even if we destroy the container
         - .:/var/www/html
+    command: "true"
