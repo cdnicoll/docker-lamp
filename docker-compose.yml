@@ -11,12 +11,31 @@ nginx:
         - app
 
 php:
-    image: php:7.0-fpm
+    build: ./php/
     expose: # expose port to other containers only
         - 9000
+    links:
+        - mysql
     volumes_from:
         # we are telling Docker Compose to mount the volumes from app in both these containers
         - app
+
+mysql:
+    image: mysql:latest
+    volumes_from:
+        - data
+    environment:
+        MYSQL_ROOT_PASSWORD: secret
+        MYSQL_DATABASE: project
+        MYSQL_USER: project
+        MYSQL_PASSWORD: project
+
+# Let Docker Compose mount a directory of its choice from the host machine into /var/lib/mysql
+data:
+    image: mysql:latest
+    volumes:
+        - /var/lib/mysql
+    command: "true"
 
 # The purpose of this container is solely to hold the application code
 app:
