@@ -1,0 +1,21 @@
+nginx:
+    # tell Docker Compose not to use an existing image but to use the Dockerfile 
+    # from nginx/ to build a new image
+    build: ./nginx/ 
+    ports: # expose port to hose
+        - 80:80
+    links:
+        - php    # We are telling Docker Compose that the nginx container needs a link to the php one
+    volumes:
+        - .:/var/www/html
+
+php:
+    image: php:7.0-fpm
+    expose: # expose port to other containers only
+        - 9000
+    volumes:
+      # . (current directory) must be mounted inside the container as its /var/www/html directory. 
+      # To simplify, it means that the content of the current directory on our 
+      # host machine will be in sync with the container's. It also means that this 
+      # content will be persistent even if we destroy the container
+        - .:/var/www/html
